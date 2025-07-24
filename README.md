@@ -1,1 +1,1 @@
-# ToDoApp-Django
+# ToDo Web Application built with Python Django
