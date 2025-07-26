@@ -14,4 +14,4 @@ class Task(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks')
 
     def __str__(self):
-        return f"{self.title} ({self.status})"
+        return f"{self.id}: {self.title} ({self.status})"

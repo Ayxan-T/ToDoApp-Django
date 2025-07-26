@@ -15,3 +15,6 @@ The corresponding code from ToDoList/settings.py:
             "PORT": "5432",
         }
     }`
+
+## Future ideas
+> Adding logout functionality -> adding refresh token to blocklist
