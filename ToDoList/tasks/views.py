@@ -33,3 +33,13 @@ def get_task_by_id(request, task_id):
         return Response(serialized_task.data)
     except Task.DoesNotExist:
         return Response({'error': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['POST'])
+@check_authorization
+def create_task(request):
+    serializer = TaskSerializer(data=request.data)
+    if serializer.is_valid():
+        user_instance = User.objects.get(id=request.user_id)
+        serializer.save(user_id=user_instance)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
