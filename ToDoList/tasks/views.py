@@ -66,3 +66,14 @@ def delete_task(request, task_id):
         return Response(status=status.HTTP_204_NO_CONTENT)
     except Task.DoesNotExist:
         return Response({'error': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['GET'])
+@check_authorization
+def task_completed(request, task_id):
+    try:
+        task = Task.objects.get(id=task_id, user_id=request.user_id)
+        task.status = 'completed'
+        task.save()
+        return Response({'message': 'Task marked as completed'}, status=status.HTTP_200_OK)
+    except Task.DoesNotExist:
+        return Response({'error': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)

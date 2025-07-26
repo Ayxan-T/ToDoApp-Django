@@ -8,6 +8,8 @@ urlpatterns = [
     path("update-task/<int:task_id>/", views.update_task),
     path("delete-task/<int:task_id>/", views.delete_task),
 
+    path("task/<int:task_id>/completed/", views.task_completed),
+
     # Uncomment the following line to enable the endpoint for getting all tasks
     # path("", views.get_all_tasks)
 ]
