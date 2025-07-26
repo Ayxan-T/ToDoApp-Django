@@ -7,11 +7,13 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import AccessToken
 
 # Create your views here.
+'''
 @api_view(['GET'])
 def get_all_tasks(request):
     tasks = Task.objects.all()
     serializer = TaskSerializer(tasks, many=True)
     return Response(serializer.data)
+'''
 
 @api_view(['GET'])
 def get_user_tasks(request):
@@ -27,7 +29,7 @@ def get_user_tasks(request):
             return Response({'error': 'Invalid token.'}, status=status.HTTP_401_UNAUTHORIZED)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
-    
+
     tasks = Task.objects.filter(user_id=user)
     serialized_tasks = TaskSerializer(tasks, many=True)
     return Response(serialized_tasks.data)
