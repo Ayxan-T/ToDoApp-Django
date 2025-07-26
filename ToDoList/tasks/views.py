@@ -56,3 +56,13 @@ def update_task(request, task_id):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except Task.DoesNotExist:
         return Response({'error': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['DELETE'])
+@check_authorization
+def delete_task(request, task_id):
+    try:
+        task = Task.objects.get(id=task_id, user_id=request.user_id)
+        task.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    except Task.DoesNotExist:
+        return Response({'error': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
