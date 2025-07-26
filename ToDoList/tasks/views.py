@@ -77,3 +77,16 @@ def task_completed(request, task_id):
         return Response({'message': 'Task marked as completed'}, status=status.HTTP_200_OK)
     except Task.DoesNotExist:
         return Response({'error': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['GET'])
+@check_authorization
+def filter_tasks_by_status(request, status):
+    user_id = request.user_id
+    valid_statuses = {'new', 'in_progress', 'completed'}
+
+    if status not in valid_statuses:
+        return Response({'error': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
+
+    tasks = Task.objects.filter(user_id=user_id, status=status)
+    serializer = TaskSerializer(tasks, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
