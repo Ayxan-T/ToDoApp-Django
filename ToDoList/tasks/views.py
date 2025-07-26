@@ -1,5 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+
+from .decorators import check_authorization
 from .models import Task
 from users.models import User
 from .serializers import TaskSerializer
@@ -16,41 +18,17 @@ def get_all_tasks(request):
 '''
 
 @api_view(['GET'])
+@check_authorization
 def get_user_tasks(request):
-    auth_header = request.headers.get('Authorization')
-
-    if not auth_header or not auth_header.startswith('Bearer '):
-        return Response({'error': 'Authorization tokens are missing.'}, status=status.HTTP_401_UNAUTHORIZED)
-    token = auth_header.split(' ')[1]
-    try:
-        token = AccessToken(token)
-        user = token['user_id']
-        if not User.objects.filter(id=user).exists():
-            return Response({'error': 'Invalid token.'}, status=status.HTTP_401_UNAUTHORIZED)
-    except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
-
-    tasks = Task.objects.filter(user_id=user)
+    tasks = Task.objects.filter(user_id=request.user_id)
     serialized_tasks = TaskSerializer(tasks, many=True)
     return Response(serialized_tasks.data)
 
 @api_view(['GET'])
-def get_task_by_id(request, task_id):
-    auth_header = request.headers.get('Authorization')
-    
-    if not auth_header or not auth_header.startswith('Bearer '):
-        return Response({'error': 'Authorization tokens are missing.'}, status=status.HTTP_401_UNAUTHORIZED)
-    token = auth_header.split(' ')[1]
+@check_authorization
+def get_task_by_id(request, task_id):    
     try:
-        token = AccessToken(token)
-        user = token['user_id']
-        if not User.objects.filter(id=user).exists():
-            return Response({'error': 'Invalid token.'}, status=status.HTTP_401_UNAUTHORIZED)
-    except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
-    
-    try:
-        task = Task.objects.get(id=task_id, user_id=user)
+        task = Task.objects.get(id=task_id, user_id=request.user_id)
         serialized_task = TaskSerializer(task)
         return Response(serialized_task.data)
     except Task.DoesNotExist:
