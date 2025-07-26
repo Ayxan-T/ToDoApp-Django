@@ -20,9 +20,31 @@ def get_all_tasks(request):
 @api_view(['GET'])
 @check_authorization
 def get_user_tasks(request):
+    PAGE_SIZE = 10  # The number of tasks per page
+    page = request.query_params.get('page', 1)
+    try:
+        page = int(page)
+    except ValueError:
+        return Response({'error': 'Invalid page number'}, status=status.HTTP_400_BAD_REQUEST)
+    if page < 1:
+        return Response({'error': 'Page number must be greater than 0'}, status=status.HTTP_400_BAD_REQUEST)
+    
     tasks = Task.objects.filter(user_id=request.user_id)
-    serialized_tasks = TaskSerializer(tasks, many=True)
-    return Response(serialized_tasks.data)
+    total_tasks = tasks.count()
+    total_pages = (total_tasks + PAGE_SIZE - 1) // PAGE_SIZE  # Calculate total pages
+    if page > total_pages:
+        return Response({'error': 'Page number exceeds total pages'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    start = (page - 1) * PAGE_SIZE
+    end = min(start + PAGE_SIZE, total_tasks)
+
+    serialized_tasks = TaskSerializer(tasks[start:end], many=True)
+    return Response({
+        'current_page': page,
+        'total_pages': total_pages,
+        'total_tasks': total_tasks,
+        'results': serialized_tasks.data
+        })
 
 @api_view(['GET'])
 @check_authorization
