@@ -33,3 +33,25 @@ def get_user_tasks(request):
     tasks = Task.objects.filter(user_id=user)
     serialized_tasks = TaskSerializer(tasks, many=True)
     return Response(serialized_tasks.data)
+
+@api_view(['GET'])
+def get_task_by_id(request, task_id):
+    auth_header = request.headers.get('Authorization')
+    
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return Response({'error': 'Authorization tokens are missing.'}, status=status.HTTP_401_UNAUTHORIZED)
+    token = auth_header.split(' ')[1]
+    try:
+        token = AccessToken(token)
+        user = token['user_id']
+        if not User.objects.filter(id=user).exists():
+            return Response({'error': 'Invalid token.'}, status=status.HTTP_401_UNAUTHORIZED)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    try:
+        task = Task.objects.get(id=task_id, user_id=user)
+        serialized_task = TaskSerializer(task)
+        return Response(serialized_task.data)
+    except Task.DoesNotExist:
+        return Response({'error': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
