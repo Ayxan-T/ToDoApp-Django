@@ -52,5 +52,5 @@ def refresh_token(request):
         return Response({'access': new_access_token}, status=status.HTTP_200_OK)
 
     except Exception:
-        return Response({'error': "Invalid or expired refresh token"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': "Invalid or expired refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
 
