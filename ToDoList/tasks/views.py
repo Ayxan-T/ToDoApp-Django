@@ -102,13 +102,13 @@ def task_completed(request, task_id):
     
 @api_view(['GET'])
 @check_authorization
-def filter_tasks_by_status(request, status):
+def filter_tasks_by_status(request, Status):
     user_id = request.user_id
     valid_statuses = {'new', 'in_progress', 'completed'}
 
-    if status not in valid_statuses:
+    if Status not in valid_statuses:
         return Response({'error': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
 
-    tasks = Task.objects.filter(user_id=user_id, status=status)
+    tasks = Task.objects.filter(user_id=user_id, status=Status)
     serializer = TaskSerializer(tasks, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
