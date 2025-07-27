@@ -1,9 +1,6 @@
 from functools import wraps
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from .models import Task
 from users.models import User
-from .serializers import TaskSerializer
 from rest_framework import status
 from rest_framework_simplejwt.tokens import AccessToken
 
