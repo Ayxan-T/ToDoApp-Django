@@ -1,12 +1,12 @@
 # RESTful API for ToDo App built with Django REST Framework (DRF)
 ## How to run?
 Cloning the repository, installing dependencies (mentioned in requirements.txt), and applying migrations (building db tables)
-`git clone https://github.com/Ayxan-T/ToDoApp-Django.git
-cd ToDoApp-Django/ToDoList`
-`pip install -r requirements.txt`
+`git clone https://github.com/Ayxan-T/ToDoApp-Django.git  
+cd ToDoApp-Django/ToDoList`  
+`pip install -r requirements.txt`  
 `python manage.py migrate`
 
-And the server is ready to be started:
+And the server is ready to be started:  
 `python manage.py runserver`
 
 The API can be accessed at `http://localhost:8000/` (via web browser, Postman, etc.)
