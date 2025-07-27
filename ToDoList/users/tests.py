@@ -112,3 +112,34 @@ class UserLoginTests(TestCase):
         }
         response = self.client.post(loginURL, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+class UserRefreshTokenTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        User(first_name='TestUser', username='testuser', password='testpassword').save()
+        login_data = {
+            'username': 'testuser',
+            'password': 'testpassword'
+        }
+        response = self.client.post(loginURL, login_data)
+        self.refresh_token = response.data['refresh']
+
+    def test_refresh_token_valid(self):
+        data = {
+            'refresh': self.refresh_token
+        }
+        response = self.client.post(reverse('refresh_token'), data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('access', response.data)
+
+    def test_refresh_token_invalid(self):
+        data = {
+            'refresh': 'invalidtoken'
+        }
+        response = self.client.post(reverse('refresh_token'), data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_refresh_token_missing(self):
+        data = {}
+        response = self.client.post(reverse('refresh_token'), data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
