@@ -17,6 +17,7 @@ def register_user(request):
         user.set_password(serializer.validated_data['password'])
         user.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def login_user(request):

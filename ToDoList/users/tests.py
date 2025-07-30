@@ -69,7 +69,9 @@ class UserRegistrationTests(TestCase):
 class UserLoginTests(TestCase):
     def setUp(self):
         self.client = APIClient()
-        User(first_name='TestUser', username='testuser', password='testpassword').save()
+        user = User(first_name='TestUser', username='testuser')
+        user.set_password('testpassword')
+        user.save()
 
     def test_login_user_valid(self):
         data = {
@@ -116,7 +118,10 @@ class UserLoginTests(TestCase):
 class UserRefreshTokenTests(TestCase):
     def setUp(self):
         self.client = APIClient()
-        User(first_name='TestUser', username='testuser', password='testpassword').save()
+        user = User(first_name='TestUser', username='testuser')
+        user.set_password('testpassword')
+        user.save()
+
         login_data = {
             'username': 'testuser',
             'password': 'testpassword'
