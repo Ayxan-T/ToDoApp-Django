@@ -9,9 +9,14 @@ from rest_framework_simplejwt.tokens import RefreshToken
 def register_user(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
+        user = User(
+            username= serializer.validated_data['username'],
+            first_name = serializer.validated_data['first_name'],
+            last_name = serializer.validated_data.get('last_name', '')
+        )
+        user.set_password(serializer.validated_data['password'])
+        user.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def login_user(request):
@@ -26,7 +31,7 @@ def login_user(request):
     except User.DoesNotExist:
         return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
-    if user.password != password:
+    if not user.check_password(password):
         return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
     refresh = RefreshToken()
