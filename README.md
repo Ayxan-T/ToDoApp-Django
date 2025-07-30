@@ -75,7 +75,9 @@ A custom decorator, **@check_authorization**, is used to ensure that only author
 This project includes unit tests for key API functionality using Django's built-in testing tools and `rest_framework.test.APIClient`.
 
 To run the test suite:  
-`python manage.py test`
+```
+python manage.py test
+```
 
 ## Future ideas
 Adding logout functionality -> adding refresh token to blocklist?
