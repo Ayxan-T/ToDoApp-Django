@@ -84,8 +84,10 @@ Adding logout functionality -> adding refresh token to blocklist?
 
 ## Updates after Feedback
 - Passwords were stored in plain text, which was a security risk.
-+ User model was refactored to inherit from AbstractBaseUser and implement its password hashing functionality
+
+User model was refactored to inherit from AbstractBaseUser and implement its password hashing functionality
 
 - Pagination in user tasks retrieval was manual.
-+ PageNumberPagination replaced manual pagination.
+
+PageNumberPagination replaced manual pagination.
 
