@@ -85,7 +85,7 @@ Adding logout functionality -> adding refresh token to blocklist?
 ## Updates after Feedback
 - Passwords were stored in plain text, which was a security risk.
 
-User model was refactored to inherit from AbstractBaseUser and implement its password hashing functionality
+User model was refactored to inherit from AbstractBaseUser and implement its password hashing functionality.
 
 - Pagination in user tasks retrieval was manual.
 
@@ -99,11 +99,12 @@ Endpoint for filtering was removed. Filtering is now done thorugh query paramete
 
 The endpoint was factored to serve PATCH requests, not GET requests.
 
-- SECRET_KEY and DB credentials were stored hardcodedly in the settings.py.
+- SECRET_KEY and DB credentials were hardcoded in the settings.py.
 
 They were moved to .env file and settings.py was modified to refer to them.
 
-- Database inconsistensy: db.sqlite3 remained in the root, though PostgreSQL was set up in settings.py.  
+- Database inconsistensy: db.sqlite3 was left in the root despite PostgreSQL being configured.  
 
-db.sqlite3 was removed to clear the confusion.
+db.sqlite3 was removed to avoid confusion and ensure consistency with the database setup.
+
 
