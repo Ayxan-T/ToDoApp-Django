@@ -22,10 +22,12 @@ class UserTasksTests(TestCase):
         self.client.credentials(HTTP_AUTHORIZATION = f'Bearer {self.access_token}')
 
     def create_tasks(self):
+        Status = ['new', 'in_progress', 'completed']
         for i in range(15):
             Task(
                 title=f'Task {i}',
                 description=f'Description for task {i}',
+                status=Status[i % 3],
                 user_id = self.user
             ).save()
 
@@ -54,6 +56,21 @@ class UserTasksTests(TestCase):
     def test_get_user_tasks_page_exceeds_total(self):
         response = self.client.get(userTasksURL + '?page=9999')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_user_tasks_with_status_filter(self):
+        self.create_tasks()
+        response = self.client.get(userTasksURL + '?status=new')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 5)  # 5 tasks with status 'new'
+        for task in response.data['results']:
+            self.assertEqual(task['status'], 'new')
+        
+        # Test with invalid status
+        response = self.client.get(userTasksURL + '?status=invalid_status')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['error'], 'Invalid status')
+
+        
 
 class TaskTests(TestCase):
     def setUp(self):
@@ -125,29 +142,3 @@ class TaskTests(TestCase):
     def test_task_completed_not_found(self):
         response = self.client.get(reverse('task_completed', args=[9999]))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-    
-    def test_filter_tasks_by_status(self):
-        task1 = Task(title='Task 1', description='Description 1', status='new', user_id=self.user)
-        task2 = Task(title='Task 2', description='Description 2', status='in_progress', user_id=self.user)
-        task3 = Task(title='Task 3', description='Description 3', status='completed', user_id=self.user)
-        task1.save()
-        task2.save()
-        task3.save()
-
-        response = self.client.get(reverse('filter_tasks_by_status', args=['new']))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['title'], 'Task 1')
-
-        response = self.client.get(reverse('filter_tasks_by_status', args=['in_progress']))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['title'], 'Task 2')
-
-        response = self.client.get(reverse('filter_tasks_by_status', args=['completed']))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['title'], 'Task 3')
-
-        response = self.client.get(reverse('filter_tasks_by_status', args=['invalid_status']))
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

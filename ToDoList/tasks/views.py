@@ -10,14 +10,6 @@ from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
-'''
-@api_view(['GET'])
-def get_all_tasks(request):
-    tasks = Task.objects.all()
-    serializer = TaskSerializer(tasks, many=True)
-    return Response(serializer.data)
-'''
-
 class TaskPagination(PageNumberPagination):
     page_size = 10  # Number of tasks per page
     page_size_query_param = 'page_size'
@@ -27,7 +19,15 @@ class TaskPagination(PageNumberPagination):
 @check_authorization
 def get_user_tasks(request):
     user_id = request.user_id
-    tasks = Task.objects.filter(user_id=user_id)
+    Status = request.query_params.get('status', None)
+    if Status:
+        valid_statuses = {'new', 'in_progress', 'completed'}
+        if Status not in valid_statuses:
+            return Response({'error': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
+        tasks = Task.objects.filter(user_id=user_id, status=Status).order_by('id')
+    else:
+        # If no status filter is applied, get all tasks for the user
+        tasks = Task.objects.filter(user_id=user_id).order_by('id')
     
     paginator = TaskPagination()
     paginated_tasks = paginator.paginate_queryset(tasks, request)
@@ -88,16 +88,3 @@ def task_completed(request, task_id):
         return Response({'message': 'Task marked as completed'}, status=status.HTTP_200_OK)
     except Task.DoesNotExist:
         return Response({'error': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
-    
-@api_view(['GET'])
-@check_authorization
-def filter_tasks_by_status(request, Status):
-    user_id = request.user_id
-    valid_statuses = {'new', 'in_progress', 'completed'}
-
-    if Status not in valid_statuses:
-        return Response({'error': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
-
-    tasks = Task.objects.filter(user_id=user_id, status=Status)
-    serializer = TaskSerializer(tasks, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)

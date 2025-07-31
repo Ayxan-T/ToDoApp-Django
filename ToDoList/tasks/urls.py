@@ -9,8 +9,4 @@ urlpatterns = [
     path("delete-task/<int:task_id>/", views.delete_task, name='delete_task'),
 
     path("mark-completed/<int:task_id>/", views.task_completed, name='task_completed'),
-    path("filter-by-status/<str:Status>/", views.filter_tasks_by_status, name='filter_tasks_by_status'),
-
-    # Uncomment the following line to enable the endpoint for getting all tasks
-    # path("", views.get_all_tasks)
 ]
