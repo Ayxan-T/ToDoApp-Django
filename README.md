@@ -95,3 +95,7 @@ PageNumberPagination replaced manual pagination.
 
 Endpoint for filtering was removed. Filtering is now done thorugh query parameter 'status' of 'get_user_tasks' endpoint.
 
+- Endpoint GET /mark-completed/ was modifying existing data, which violated REST conventions.  
+
+The endpoint was factored to serve PATCH requests, not GET requests.
+
