@@ -7,6 +7,7 @@ from users.models import User
 from .serializers import TaskSerializer
 from rest_framework import status
 from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
 '''
@@ -17,34 +18,22 @@ def get_all_tasks(request):
     return Response(serializer.data)
 '''
 
+class TaskPagination(PageNumberPagination):
+    page_size = 10  # Number of tasks per page
+    page_size_query_param = 'page_size'
+    max_page_size = 100  # Maximum number of tasks per page
+
 @api_view(['GET'])
 @check_authorization
 def get_user_tasks(request):
-    PAGE_SIZE = 10  # The number of tasks per page
-    page = request.query_params.get('page', 1)
-    try:
-        page = int(page)
-    except ValueError:
-        return Response({'error': 'Invalid page number'}, status=status.HTTP_400_BAD_REQUEST)
-    if page < 1:
-        return Response({'error': 'Page number must be greater than 0'}, status=status.HTTP_400_BAD_REQUEST)
+    user_id = request.user_id
+    tasks = Task.objects.filter(user_id=user_id)
     
-    tasks = Task.objects.filter(user_id=request.user_id)
-    total_tasks = tasks.count()
-    total_pages = (total_tasks + PAGE_SIZE - 1) // PAGE_SIZE  # Calculate total pages
-    if page > total_pages:
-        return Response({'error': 'Page number exceeds total pages'}, status=status.HTTP_400_BAD_REQUEST)
+    paginator = TaskPagination()
+    paginated_tasks = paginator.paginate_queryset(tasks, request)
     
-    start = (page - 1) * PAGE_SIZE
-    end = min(start + PAGE_SIZE, total_tasks)
-
-    serialized_tasks = TaskSerializer(tasks[start:end], many=True)
-    return Response({
-        'current_page': page,
-        'total_pages': total_pages,
-        'total_tasks': total_tasks,
-        'results': serialized_tasks.data
-        })
+    serializer = TaskSerializer(paginated_tasks, many=True)
+    return paginator.get_paginated_response(serializer.data)
 
 @api_view(['GET'])
 @check_authorization

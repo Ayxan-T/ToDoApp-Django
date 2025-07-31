@@ -31,31 +31,29 @@ class UserTasksTests(TestCase):
 
     def test_get_user_tasks(self):
         # Test without tasks
-        response = self.client.get(userTasksURL) # Get default page = 1 -> exceeds total_pages (0)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['error'], 'Page number exceeds total pages')
+        response = self.client.get(userTasksURL) # Get default page = 1
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 0)
+        self.assertEqual(response.data['results'], [])
 
         # Test with tasks: first page
         self.create_tasks() # Create 15 tasks for the user
         response = self.client.get(userTasksURL)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 10)
-        self.assertEqual(response.data['current_page'], 1)
-        self.assertEqual(response.data['total_pages'], 2)
 
         # Test with tasks: second page
         response = self.client.get(userTasksURL + '?page=2')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 5)
-        self.assertEqual(response.data['current_page'], 2)
     
     def test_get_user_tasks_invalid_page(self):
         response = self.client.get(userTasksURL + '?page=invalid')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
     
     def test_get_user_tasks_page_exceeds_total(self):
         response = self.client.get(userTasksURL + '?page=9999')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 class TaskTests(TestCase):
     def setUp(self):
