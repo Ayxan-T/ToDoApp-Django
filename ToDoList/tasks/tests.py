@@ -134,11 +134,11 @@ class TaskTests(TestCase):
     def test_task_completed(self):
         task = Task(title='Task to Complete', description='Complete this task', user_id=self.user)
         task.save()
-        response = self.client.get(reverse('task_completed', args=[task.id]))
+        response = self.client.patch(reverse('task_completed', args=[task.id]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         task = Task.objects.get(id=task.id)
         self.assertEqual(task.status, 'completed')
     
     def test_task_completed_not_found(self):
-        response = self.client.get(reverse('task_completed', args=[9999]))
+        response = self.client.patch(reverse('task_completed', args=[9999]))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

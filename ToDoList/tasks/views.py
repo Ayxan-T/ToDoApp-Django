@@ -78,7 +78,7 @@ def delete_task(request, task_id):
     except Task.DoesNotExist:
         return Response({'error': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
     
-@api_view(['GET'])
+@api_view(['PATCH'])
 @check_authorization
 def task_completed(request, task_id):
     try:
