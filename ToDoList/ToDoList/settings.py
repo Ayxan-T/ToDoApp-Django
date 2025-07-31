@@ -86,12 +86,6 @@ DATABASES = {
         "HOST": config('DB_HOST'),
         "PORT": config('DB_PORT'),
     }
-
-    # Uncomment the following lines to use SQLite instead of PostgreSQL
-    # "default": {
-    #     "ENGINE": "django.db.backends.sqlite3",   
-    #     "NAME": BASE_DIR / "db.sqlite3",
-    # }
 }
 
 

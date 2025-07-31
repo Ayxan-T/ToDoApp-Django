@@ -99,3 +99,11 @@ Endpoint for filtering was removed. Filtering is now done thorugh query paramete
 
 The endpoint was factored to serve PATCH requests, not GET requests.
 
+- SECRET_KEY and DB credentials were stored hardcodedly in the settings.py.
+
+They were moved to .env file and settings.py was modified to refer to them.
+
+- Database inconsistensy: db.sqlite3 remained in the root, though PostgreSQL was set up in settings.py.  
+
+db.sqlite3 was removed to clear the confusion.
+
