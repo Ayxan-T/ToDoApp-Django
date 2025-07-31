@@ -91,3 +91,7 @@ User model was refactored to inherit from AbstractBaseUser and implement its pas
 
 PageNumberPagination replaced manual pagination.
 
+- Filtering was done via a dedicated endpoint.  
+
+Endpoint for filtering was removed. Filtering is now done thorugh query parameter 'status' of 'get_user_tasks' endpoint.
+
