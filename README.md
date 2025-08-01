@@ -19,16 +19,44 @@ The project is configured to use a PostgreSQL database by default, as defined in
 For your convenience, an alternative SQLite3 configuration is also included but commented out in the same file. This enables easier local testing without the need for a PostgreSQL setup.
 
 ## How to Run
+
+### Locally, Without Docker
+
 1. Clone the repository  
-   `git clone https://github.com/Ayxan-T/ToDoApp-Django.git`
-2. Navigate to the project directory  
-   `cd ToDoApp-Django/ToDoList`
-3. Install dependencies  
-   `pip install -r requirements.txt`
-4. Apply migrations  
-   `python manage.py migrate`
-5. Start the server  
-   `python manage.py runserver`
+   ```
+   git clone https://github.com/Ayxan-T/ToDoApp-Django.git
+   ```
+3. Navigate to the project directory  
+   ```
+   cd ToDoApp-Django/ToDoList
+   ```
+5. Install dependencies  
+   ```
+   pip install -r requirements.txt
+   ```
+7. Apply migrations  
+   ```
+   python manage.py migrate
+   ```
+9. Start the server  
+   ```
+   python manage.py runserver
+   ```
+
+### With Docker
+
+1. Clone the repository
+   ```
+   git clone https://github.com/Ayxan-T/ToDoApp-Django.git
+   ```
+3. Navigate to the project directory  
+   ```
+   cd ToDoApp-Django/ToDoList
+   ```
+5. Build and run the container
+   ```
+   docker-compose up --build
+   ```
 
 The API can be accessed at `http://localhost:8000/` (via web browser, Postman, etc.)
 
