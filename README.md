@@ -82,29 +82,37 @@ python manage.py test
 ## Future ideas
 Adding logout functionality -> adding refresh token to blocklist?
 
-## Updates after Feedback
-- Passwords were stored in plain text, which was a security risk.
+## Updates after Feedback 
 
-User model was refactored to inherit from AbstractBaseUser and implement its password hashing functionality.
+### Issues and fixes 
 
-- Pagination in user tasks retrieval was manual.
+- Plaintext Passwords
 
-PageNumberPagination replaced manual pagination.
+User model was refactored to inherit from `AbstractBaseUser`, enabling secure password hashing.
 
-- Filtering was done via a dedicated endpoint.  
+- Manual Pagination
 
-Endpoint for filtering was removed. Filtering is now done thorugh query parameter 'status' of 'get_user_tasks' endpoint.
+Manual pagination in user tasks retrieval was replaced with `PageNumberPagination`.
 
-- Endpoint GET /mark-completed/ was modifying existing data, which violated REST conventions.  
+- Dedicated filtering endpoint  
 
-The endpoint was factored to serve PATCH requests, not GET requests.
+Endpoint for filtering was removed. Filtering is now handled via the `status` query parameter of `get_user_tasks` endpoint.
 
-- SECRET_KEY and DB credentials were hardcoded in the settings.py.
+- REST Violation (GET /mark-completed/)  
 
-They were moved to .env file and settings.py was modified to refer to them.
+The endpoint was factored to accept PATCH requests instead of GET, aligning with REST conventions.
 
-- Database inconsistensy: db.sqlite3 was left in the root despite PostgreSQL being configured.  
+- Hardcoded Secrets
 
-db.sqlite3 was removed to avoid confusion and ensure consistency with the database setup.
+`SECRET_KEY` and database credentials were moved to .env file and settings.py was modified accordingly.
 
+- Database inconsistensy
 
+The unused db.sqlite3 file was removed to maintain consistency with the PostgreSQL setup.
+
+### Docker
+
+`Dockerfile` and `compose-docker.yml` were added. The project was successfully containerized and tested.
+
+One issue arose: as services in container were all being started simultaneously, it led to a race condition where the web application was trying to connect to db before it is ready.   
+This was resolved by introducing `wait_for_db.py` script, which blocks execution until the database becomes available.
